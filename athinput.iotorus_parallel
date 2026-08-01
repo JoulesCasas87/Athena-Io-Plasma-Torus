@@ -1,0 +1,113 @@
+<comment>
+problem   = Io Plasma Torus 2.5D
+
+<job>
+problem_id = io_torus
+
+<output1>
+file_type  = vtk
+variable   = prim
+dt         = 0.01        # (Default: 0.00879)
+
+<output2>
+file_type = rst
+dt = 200.0
+
+<output3>
+file_type = hst
+dt        = 0.1            # Outputs a diagnostic line very frequently
+
+<time>
+cfl_number = 0.3
+nlim       = -1
+tlim       = 150.0          # Default: 150 - For ~9 Day Cycle
+
+<mesh>
+nx1        = 96
+x1min      = 4.5
+x1max      = 10.0
+ix1_bc     = outflow
+ox1_bc     = outflow
+
+nx2        = 64
+x2min      = 0.0
+x2max      = 6.28318530718
+ix2_bc     = periodic
+ox2_bc     = periodic
+
+nx3        = 1
+x3min      = -0.5
+x3max      = 0.5
+ix3_bc     = periodic
+ox3_bc     = periodic
+
+<hydro>
+gamma           = 1.6667
+dfloor          = 100.0
+pfloor          = 1e-3
+
+<problem>
+# --- PHIPPS & WITHERS (2017) EMPIRICAL PROFILE ---
+N1 = 1710.0   # Cold Torus Density
+C1 = 5.23     # Cold Torus Center (R_J)
+W1 = 0.20     # Cold Torus Width
+
+N2 = 2180.0   # Ribbon Density
+C2 = 5.60     # Ribbon Center (R_J)
+W2 = 0.08     # Ribbon Width
+
+N3 = 2160.0   # Warm Torus Density
+C3 = 5.89     # Warm Torus Center (R_J)
+W3 = 0.32     # Warm Torus Width
+
+N4 = 1601.0   # Extended Tail Density
+C4 = 5.52     # Extended Tail Center (R_J)
+W4 = 1.88     # Extended Tail Width
+
+# --- DYNAMICS & FORCING SPRING ---
+cliff_radius = 4.8  # Centrifugal drop-off point
+relax_cliff  = 5  # Speed at which plasma is crushed inside the cliff || Default: 0.1
+relax_torus  = 100.0  # Speed at which plasma normalizes to the target profile || Default: 20.0
+
+# --- PARAMETERS MUST MATCH C++ "GetOrAddReal" NAMES ---
+io_radius   = 5.9     # Location of Io
+io_width    = 0.5     # Width of injection region
+omega_j     = 1.0     # Jupiter rotation
+breakdown_radius = 2.5  # Hill (1979) Corotation Breakdown Distance (R_J) Default: 3.0
+rho_bg      = 1.0e-3   # Keeps the math stable in empty space
+
+# --- START FROM STABLE PROFILE ---
+use_stable_profile = true
+
+# --- MAGNETIC FIELD ---
+B0          = 340000
+
+# --- DIFFUSION: CONTROLS SPREADING ---
+# Keep low to prevent "flat" profile.
+diff_coeff  = 0.001
+
+# --- TUNING KNOBS FOR REALISTIC PROFILE ---
+# Wind: Controls how fast plasma leaves.
+# Higher = lower density at edge (realistic drop off). (Old: 0.01; 0.1)
+recomb_rate = 1.5
+
+# --- TRACER DYE INJECTION ---
+enable_tracer   = true
+tracer_start    = 5.0   # Wait 5 simulation hours before injecting
+tracer_duration = 5.0   # Inject dye for exactly 1 hour, then shut off
+
+# --- OBSERVATION & TIME SETUP ---
+start_io_phase = 259.97   # Initial Io Phase at T=0 (degrees)
+start_cml      = 27.37  # Initial Central Meridian Longitude at T=0 (degrees)
+start_time_utc      = 00:00   # T=0 in UTC (Matches your RadioJOVE .sps files)
+observer_utc_offset = -4.0    # Jasper, GA is UTC-5 (EST) or -4.0 (EDT)
+
+# --- RADIO EMISSION TARGETS (Io-B) ---
+iob_cml_min    = 15.0
+iob_cml_max    = 239.0
+iob_phase_min  = 42.0
+iob_phase_max  = 110.0
+
+# --- EARTH VISIBILITY CYCLE (RADIO OBSERVATION) ---
+jup_rise_local      = 20:30   # Jupiter rises (Local Time in Jasper)
+jup_set_local       = 06:45   # Jupiter sets (Local Time in Jasper)
